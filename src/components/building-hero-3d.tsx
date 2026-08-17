@@ -34,7 +34,7 @@ export default function BuildingHero3D() {
       powerPreference: "high-performance",
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -55,8 +55,8 @@ export default function BuildingHero3D() {
     const keyLight = new THREE.DirectionalLight(0xfff4e0, 2.5);
     keyLight.position.set(30, 50, 30);
     keyLight.castShadow = true;
-    keyLight.shadow.mapSize.width = 2048;
-    keyLight.shadow.mapSize.height = 2048;
+    keyLight.shadow.mapSize.width = 1024;
+    keyLight.shadow.mapSize.height = 1024;
     keyLight.shadow.camera.near = 0.5;
     keyLight.shadow.camera.far = 200;
     keyLight.shadow.camera.left = -60;
@@ -189,9 +189,12 @@ export default function BuildingHero3D() {
 
         buildingModel.traverse((child: any) => {
           if (child.isMesh) {
-            child.castShadow = true;
+            // Only large meshes cast shadows — small decor doesn't
+            const bbox = new THREE.Box3().setFromObject(child);
+            const sz = bbox.getSize(new THREE.Vector3());
+            const maxDim = Math.max(sz.x, sz.y, sz.z);
+            child.castShadow = maxDim > 1.5;
             child.receiveShadow = true;
-            // Keep original textures (real facade/road/roof materials)
           }
         });
 
@@ -343,14 +346,19 @@ export default function BuildingHero3D() {
     // Update functions
     // ============================================
     function updateComponents() {
-      // Faster lerp near the end so building completes before scroll passes hero
-      const lerpSpeed = scrollProgress > 0.85 ? 0.25 : 0.12;
-      smoothScrollProgress = lerp(smoothScrollProgress, scrollProgress, lerpSpeed);
+      // Frame-rate independent lerp — smoother on all devices
+      const dt = clock.getDelta();
+      const lerpSpeed = scrollProgress > 0.85 ? 8 : 5;
+      const t = 1 - Math.exp(-lerpSpeed * dt);
+      smoothScrollProgress = lerp(smoothScrollProgress, scrollProgress, t);
 
       // Unlock scroll only when building is FULLY assembled (all pieces + final rotation)
       if (!scrollUnlocked && smoothScrollProgress >= 0.99) {
         scrollUnlocked = true;
-        console.log("%cBuilding complete — scroll unlocked!", "color: #44ff44; font-weight: bold;");
+        // Freeze shadows — no need to re-render shadow map every frame once assembled
+        renderer.shadowMap.autoUpdate = false;
+        renderer.shadowMap.needsUpdate = true;
+        console.log("%cBuilding complete — scroll unlocked, shadows frozen!", "color: #44ff44; font-weight: bold;");
       }
 
       components.forEach((comp: any) => {
@@ -391,7 +399,7 @@ export default function BuildingHero3D() {
       const pos1 = new THREE.Vector3(...(k1.position as [number, number, number]));
       const pos2 = new THREE.Vector3(...(k2.position as [number, number, number]));
       const targetCamPos = new THREE.Vector3().lerpVectors(pos1, pos2, eased);
-      camera.position.lerp(targetCamPos, 0.1);
+      camera.position.lerp(targetCamPos, 1 - Math.exp(-6 * clock.getDelta()));
 
       const target1 = new THREE.Vector3(...(k1.target as [number, number, number]));
       const target2 = new THREE.Vector3(...(k2.target as [number, number, number]));
@@ -425,7 +433,7 @@ export default function BuildingHero3D() {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       // Re-apply CSS sizing after setSize overwrites it
       renderer.domElement.style.width = "100%";
       renderer.domElement.style.height = "100%";
