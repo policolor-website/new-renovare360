@@ -19,13 +19,17 @@ export default function BuildingHero3D() {
     const scene = new THREE.Scene();
     scene.background = null;
 
+    const isMobile = window.innerWidth < 768;
+    const fov = isMobile ? 75 : 55;
     const camera = new THREE.PerspectiveCamera(
-      55,
+      fov,
       window.innerWidth / window.innerHeight,
       0.1,
       2000
     );
-    camera.position.set(0, 15, 40);
+    // Closer on mobile so model fills the screen
+    const camDist = isMobile ? 0.6 : 0.55;
+    camera.position.set(0, 15 * camDist, 40 * camDist);
     camera.lookAt(0, 6, 0);
 
     const renderer = new THREE.WebGLRenderer({
@@ -87,13 +91,21 @@ export default function BuildingHero3D() {
     // ============================================
     // Camera keyframes
     // ============================================
-    const CAMERA_KEYFRAMES = [
-      { progress: 0.00, position: [0, 15, 40],   target: [0, 6, 0] },
-      { progress: 0.25, position: [25, 13, 35],  target: [0, 6, 0] },
-      { progress: 0.50, position: [38, 20, 22],  target: [0, 6, 0] },
-      { progress: 0.75, position: [25, 24, -25], target: [0, 6, 0] },
-      { progress: 1.00, position: [0, 16, 32],   target: [0, 6, 0] },
-    ];
+    const CAMERA_KEYFRAMES = isMobile
+      ? [
+        { progress: 0.00, position: [0, 9, 24],   target: [0, 6, 0] },
+        { progress: 0.25, position: [15, 8, 21],  target: [0, 6, 0] },
+        { progress: 0.50, position: [23, 12, 13], target: [0, 6, 0] },
+        { progress: 0.75, position: [15, 14, -15],target: [0, 6, 0] },
+        { progress: 1.00, position: [0, 10, 19],  target: [0, 6, 0] },
+      ]
+      : [
+        { progress: 0.00, position: [0, 10, 22],   target: [0, 6, 0] },
+        { progress: 0.25, position: [15, 9, 19],   target: [0, 6, 0] },
+        { progress: 0.50, position: [23, 13, 13],  target: [0, 6, 0] },
+        { progress: 0.75, position: [15, 16, -15], target: [0, 6, 0] },
+        { progress: 1.00, position: [0, 11, 18],   target: [0, 6, 0] },
+      ];
 
     // ============================================
     // State
