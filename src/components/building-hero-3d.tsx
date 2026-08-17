@@ -89,13 +89,10 @@ export default function BuildingHero3D() {
     // ============================================
     const CAMERA_KEYFRAMES = [
       { progress: 0.00, position: [0, 15, 40],   target: [0, 6, 0] },
-      { progress: 0.20, position: [25, 13, 35],  target: [0, 6, 0] },
-      { progress: 0.40, position: [38, 20, 22],  target: [0, 6, 0] },
-      { progress: 0.60, position: [25, 24, -25], target: [0, 6, 0] },
-      { progress: 0.80, position: [0, 16, 32],   target: [0, 6, 0] },
-      // Fly-through: camera dives into the building and looks up
-      { progress: 0.92, position: [0, 8, 12],    target: [0, 12, 0] },
-      { progress: 1.00, position: [0, 6, 5],     target: [0, 15, 0] },
+      { progress: 0.25, position: [25, 13, 35],  target: [0, 6, 0] },
+      { progress: 0.50, position: [38, 20, 22],  target: [0, 6, 0] },
+      { progress: 0.75, position: [25, 24, -25], target: [0, 6, 0] },
+      { progress: 1.00, position: [0, 16, 32],   target: [0, 6, 0] },
     ];
 
     // ============================================
@@ -384,6 +381,13 @@ export default function BuildingHero3D() {
         comp.object.rotation.y = lerp(comp.explodedRotation.y, comp.finalRotation.y, eased);
         comp.object.rotation.z = lerp(comp.explodedRotation.z, comp.finalRotation.z, eased);
       });
+
+      // After assembly (progress > 0.95), rotate entire model 180° on Y axis
+      if (buildingModel && smoothScrollProgress > 0.95) {
+        const rotProgress = clamp((smoothScrollProgress - 0.95) / 0.05, 0, 1);
+        const rotEased = easeInOutCubic(rotProgress);
+        buildingModel.rotation.y = rotEased * Math.PI; // 180°
+      }
     }
 
     function updateCamera() {
