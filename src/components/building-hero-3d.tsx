@@ -25,8 +25,8 @@ export default function BuildingHero3D() {
       0.1,
       2000
     );
-    camera.position.set(0, 12, 30);
-    camera.lookAt(0, 5, 0);
+    camera.position.set(0, 15, 40);
+    camera.lookAt(0, 6, 0);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -88,11 +88,11 @@ export default function BuildingHero3D() {
     // Camera keyframes
     // ============================================
     const CAMERA_KEYFRAMES = [
-      { progress: 0.00, position: [0, 12, 30],   target: [0, 5, 0] },
-      { progress: 0.25, position: [18, 10, 25],  target: [0, 5, 0] },
-      { progress: 0.50, position: [28, 15, 15],  target: [0, 5, 0] },
-      { progress: 0.75, position: [18, 18, -18], target: [0, 5, 0] },
-      { progress: 1.00, position: [0, 12, 22],   target: [0, 5, 0] },
+      { progress: 0.00, position: [0, 15, 40],   target: [0, 6, 0] },
+      { progress: 0.25, position: [25, 13, 35],  target: [0, 6, 0] },
+      { progress: 0.50, position: [38, 20, 22],  target: [0, 6, 0] },
+      { progress: 0.75, position: [25, 24, -25], target: [0, 6, 0] },
+      { progress: 1.00, position: [0, 16, 32],   target: [0, 6, 0] },
     ];
 
     // ============================================
@@ -178,7 +178,7 @@ export default function BuildingHero3D() {
         const box = new THREE.Box3().setFromObject(buildingModel);
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 20 / maxDim;
+        const scale = 35 / maxDim;
         buildingModel.scale.setScalar(scale);
 
         const box2 = new THREE.Box3().setFromObject(buildingModel);
