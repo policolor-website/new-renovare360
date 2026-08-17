@@ -398,8 +398,8 @@ export default function BuildingHero3D() {
       if (buildingModel && smoothScrollProgress > 0.95) {
         const rotProgress = clamp((smoothScrollProgress - 0.95) / 0.05, 0, 1);
         const rotEased = easeInOutCubic(rotProgress);
-        // Tilt forward on X axis (toward camera) — ~25 degrees
-        buildingModel.rotation.x = -rotEased * 0.45;
+        // Tilt backward on X axis (away from camera) — ~40 degrees
+        buildingModel.rotation.x = rotEased * 0.72;
       }
     }
 
