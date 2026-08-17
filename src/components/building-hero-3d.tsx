@@ -28,7 +28,7 @@ export default function BuildingHero3D() {
       2000
     );
     // Closer on mobile so model fills the screen
-    const camDist = isMobile ? 0.6 : 0.55;
+    const camDist = isMobile ? 0.6 : 0.45;
     camera.position.set(0, 15 * camDist, 40 * camDist);
     camera.lookAt(0, 6, 0);
 
@@ -100,11 +100,11 @@ export default function BuildingHero3D() {
         { progress: 1.00, position: [0, 10, 19],  target: [0, 6, 0] },
       ]
       : [
-        { progress: 0.00, position: [0, 10, 22],   target: [0, 6, 0] },
-        { progress: 0.25, position: [15, 9, 19],   target: [0, 6, 0] },
-        { progress: 0.50, position: [23, 13, 13],  target: [0, 6, 0] },
-        { progress: 0.75, position: [15, 16, -15], target: [0, 6, 0] },
-        { progress: 1.00, position: [0, 11, 18],   target: [0, 6, 0] },
+        { progress: 0.00, position: [0, 9, 18],   target: [0, 6, 0] },
+        { progress: 0.25, position: [12, 8, 16],  target: [0, 6, 0] },
+        { progress: 0.50, position: [19, 11, 11], target: [0, 6, 0] },
+        { progress: 0.75, position: [12, 14, -12],target: [0, 6, 0] },
+        { progress: 1.00, position: [0, 10, 15],  target: [0, 6, 0] },
       ];
 
     // ============================================
@@ -394,11 +394,12 @@ export default function BuildingHero3D() {
         comp.object.rotation.z = lerp(comp.explodedRotation.z, comp.finalRotation.z, eased);
       });
 
-      // After assembly (progress > 0.95), rotate entire model 180° on Y axis
+      // After assembly (progress > 0.95), tilt model toward camera like it's tipping over
       if (buildingModel && smoothScrollProgress > 0.95) {
         const rotProgress = clamp((smoothScrollProgress - 0.95) / 0.05, 0, 1);
         const rotEased = easeInOutCubic(rotProgress);
-        buildingModel.rotation.y = rotEased * Math.PI; // 180°
+        // Tilt forward on X axis (toward camera) — ~25 degrees
+        buildingModel.rotation.x = -rotEased * 0.45;
       }
     }
 
